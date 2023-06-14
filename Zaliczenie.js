@@ -1,0 +1,93 @@
+let isGameStarted = false;
+let score = 0;
+let timer = 60;
+let lightInterval;
+let lightDelay;
+let isLightVisible = false;
+let targetX;
+let targetY;
+
+function setup() {
+  createCanvas(400, 400);
+  textAlign(CENTER, CENTER);
+  textSize(32);
+  textStyle(BOLD);
+}
+
+function draw() {
+  background(0);
+
+  if (isGameStarted) {
+    if (timer > 0) {
+      displayScore();
+      displayTimer();
+      if (!isLightVisible) {
+        lightDelay = random(500, 2000);
+        lightInterval = setInterval(showLight, lightDelay);
+        isLightVisible = true;
+        targetX = random(width);
+        targetY = random(height);
+      }
+    } else {
+      endGame();
+    }
+  } else {
+    displayStartScreen();
+  }
+
+  if (isLightVisible) {
+    fill(255);
+    rect(targetX, targetY, 50, 50);
+  }
+}
+
+function mousePressed() {
+  if (isGameStarted && isLightVisible) {
+    const distance = dist(mouseX, mouseY, targetX + 25, targetY + 25);
+    if (distance < 25) {
+      score++;
+    }
+    clearTimeout(lightInterval);
+    isLightVisible = false;
+  } else if (!isGameStarted) {
+    isGameStarted = true;
+    score = 0;
+    timer = 60;
+    setInterval(countdownTimer, 1000);
+  }
+}
+
+function displayScore() {
+  fill(255);
+  text("Punkty: " + score, width / 2, height / 2 - 50);
+}
+
+function displayTimer() {
+  fill(255);
+  text("Czas: " + timer + "s", width / 2, height / 2);
+}
+
+function displayStartScreen() {
+  fill(255);
+  text("Kliknij START, aby rozpocząć grę", width / 2, height / 2);
+}
+
+function showLight() {
+  isLightVisible = true;
+  setTimeout(hideLight, 1000);
+}
+
+
+
+function countdownTimer() {
+  timer--;
+}
+
+function endGame() {
+  isLightVisible = false;
+  isGameStarted = false;
+  background(0);
+  fill(255);
+  text("Koniec gry! Twój wynik: " + score, width / 2, height / 2);
+}
+
